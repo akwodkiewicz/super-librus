@@ -91,12 +91,57 @@ function createDailyCheckboxes() {
     row.appendChild(rightPlaceholder);
 }
 
+function createHourlyCheckboxes() {
+    const mapping = [];
+    
+    const table = document.querySelector(".wykaz");
+    const studentRows = [...table.children[1].children];
+    studentRows.forEach(student => {
+        const days = [...student.children].filter(
+            el => [...el.children].some(el2 => el2.nodeName === 'P')
+        );
+        days.forEach((day, dayIdx) => {
+            [...day.children].forEach((hour, hourIdx) => {
+                const input = hour.querySelector('input');
+                if (mapping[dayIdx] === undefined) {
+                    mapping[dayIdx] = [];
+                }
+                if (mapping[dayIdx][hourIdx] === undefined) {
+                    mapping[dayIdx][hourIdx] = [];
+                }
+                if (input !== null) {
+                    mapping[dayIdx][hourIdx].push(input);
+                }
+            })
+        });
+    });
+    
+    const hoursRow = table.querySelector("tr.bolded");
+    const dayColumns = [...hoursRow.children].filter(c => c.children.length > 0);
+    dayColumns.forEach((day, dayIdx) => {
+        const hours = [...day.children].filter(el => el.nodeName === 'P');
+        hours.forEach((hour, hourIdx) => {
+            if (mapping[dayIdx][hourIdx].length === 0) return;
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `sl-hourCheckbox-${dayIdx}-${hourIdx}`;
+            checkbox.defaultChecked = false;
+            checkbox.addEventListener("change", event => {
+                mapping[dayIdx][hourIdx].forEach(d => d.checked = event.target.checked);
+            });
+            hour.append(checkbox);
+        }); 
+    });
+}
+
 function main() {
-    if (!isReady()) {
+    if (false/*!isReady()*/) {
         return;
     }
     createMasterCheckbox();
     createDailyCheckboxes();
+    createHourlyCheckboxes();
 }
 
 main();
