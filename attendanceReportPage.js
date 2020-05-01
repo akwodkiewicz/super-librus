@@ -51,16 +51,17 @@ function createInputMapping() {
 
 function createDailyCheckboxes() {
     const table = document.querySelector('.wykaz');
-    const weekdays = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela'];
     const tableHeader = table.querySelector('tr.naglowek');
-    const weekdayHeaders = [...tableHeader.childNodes].filter(child =>
-        weekdays.some(d => child.textContent.toLowerCase().includes(d))
+    const weekdays = ['poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota', 'niedziela'];
+    const weekdayCells = weekdays.map(weekday =>
+        [...tableHeader.children].find(child =>
+            child.textContent.toLowerCase().includes(weekday)
+        )
     );
     const mapping = createInputMapping();
-    weekdayHeaders.forEach((day, dayIdx) => {
-        if (mapping[dayIdx].every(arr => arr.length === 0)) return;
+    weekdayCells.forEach((day, dayIdx) => {
+        if (!day || mapping[dayIdx].every(arr => arr.length === 0)) return;
 
-        console.log(mapping[dayIdx]);
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.id = `sl-dayCheckbox-${dayIdx}`;
